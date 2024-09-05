@@ -10,9 +10,14 @@ function App() {
 
   const [filter, setFilter] = useState([])
 
+  const [skip,setSkip] = useState(0)
+
+  
+
 
   const fetchData = async () => {
-    const resp = await fetch('https://dummyjson.com/products')
+    // const resp = await fetch('https://dummyjson.com/products')
+    const resp = await fetch(`https://dummyjson.com/products?limit=30&skip=${skip}&select=title,price`)
     const result = await resp.json()
     let newData = result.products
     setData(newData)
@@ -20,8 +25,7 @@ function App() {
 
   useEffect(() => {
     fetchData()
-    console.log(11111)
-  }, [])
+  }, [skip])
 
 
   useEffect(() => {
@@ -49,12 +53,31 @@ function App() {
     setSearch(newSearch)
   }
 
+  const hdlIncSkip = () => {
+
+    if(skip+30 >= 194)  return
+
+    setSkip( (prv) => prv +30)
+  }
+  const hdlDecSkip = () => {
+    if(skip-30 < 0) return
+
+    setSkip( (prv) => prv -30)
+  }
+
   return (
     <div className="flex flex-col w-[400px] justify-center items-center">
       <h1>Product Search</h1>
       <SearchBar search={search} setSearch={setSearch} hdlChange={hdlChange} />
       <ProductList search={search} data={data} filter={filter} />
-      <button onClick={(e) => console.log(e.target)}>BTN</button>
+      <div>
+
+      <button className="px-3 bg-red-400"
+       onClick={hdlDecSkip}>-30</button>
+      <span> {skip} / 194 </span>
+      <button className="px-3 bg-green-400"
+       onClick={hdlIncSkip}>+30</button>
+      </div>
     </div>
   )
 }
